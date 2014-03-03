@@ -1,0 +1,7 @@
+name = Views Inject SQL GroupBy
+description = Provides simple UI for views display extender plugin to add custom sql group by.
+dependencies[] = views_ui
+core = 7.x
+files[] = views_inject_groupby.module
+files[] = views_inject_groupby.views.inc
+files[] = views_inject_groupby_plugin_display_extender_code.inc
