@@ -59,10 +59,14 @@ function views_inject_groupby_views_post_build(&$view) {
   }
 }
 
+/**
+ * Implements hook_views_pre_execute().
+ */
 function views_inject_groupby_views_pre_execute(&$view) {
   $view_name = $view->name;
   $view_current_display = $view->current_display;
   if (variable_get('views_inject_groupby_' . $view_name . '_' . $view_current_display)) {
+    //print _views_inject_groupby_get_query_string($view);die();
   }
 }
 
