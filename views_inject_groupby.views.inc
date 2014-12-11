@@ -31,14 +31,16 @@ function views_inject_groupby_views_query_substitutions($query) {
 function views_inject_groupby_views_query_alter(&$view, &$query) {
   // $view_name = $view->name;
   // $view_current_display = $view->current_display;
-  // if (variable_get('views_inject_groupby_' . $view_name . '_' . $view_current_display)) {
+  // $varname = 'views_inject_groupby_' . $view_name . '_' . $view_current_display;
+  // if (variable_get($varname,FALSE)) {
   // }
 }
 
 function views_inject_groupby_views_post_build(&$view) {
   $view_name = $view->name;
   $view_current_display = $view->current_display;
-  if (variable_get('views_inject_groupby_' . $view_name . '_' . $view_current_display)) {
+  $varname = 'views_inject_groupby_' . $view_name . '_' . $view_current_display;
+  if (variable_get($varname,FALSE)) {
     $query_snippet = variable_get('views_inject_groupby_' . $view_name.'_'.$view_current_display);
     $query_snippet = Database::getConnection()->prefixTables($query_snippet);
 
@@ -49,13 +51,15 @@ function views_inject_groupby_views_post_build(&$view) {
       $query->groupBy( $query_snippet );
     }
 
-
-    $query_count = $view->build_info['query_count'];
-    if( is_object($query_count) ){
-      $oldgroupby =& $query_count->getGroupBy();
-      $oldgroupby = array();
-      $query_count->groupBy( $query_snippet );
+    if(isset($view->build_info['count_query'])){
+      $query_count = $view->build_info['count_query'];
+      if( is_object($query_count) ){
+        $oldgroupby =& $query_count->getGroupBy();
+        $oldgroupby = array();
+        $query_count->groupBy( $query_snippet );
+      }
     }
+
   }
 }
 
@@ -65,7 +69,8 @@ function views_inject_groupby_views_post_build(&$view) {
 function views_inject_groupby_views_pre_execute(&$view) {
   $view_name = $view->name;
   $view_current_display = $view->current_display;
-  if (variable_get('views_inject_groupby_' . $view_name . '_' . $view_current_display)) {
+  $varname = 'views_inject_groupby_' . $view_name . '_' . $view_current_display;
+  if (variable_get($varname,FALSE)) {
     //print _views_inject_groupby_get_query_string($view);die();
   }
 }
@@ -74,7 +79,9 @@ function views_inject_groupby_views_pre_execute(&$view) {
  * Implements hook_views_pre_execute().
  */
 function views_inject_groupby_views_pre_render(&$view) {
-  // if (variable_get('views_inject_groupby_' . $view->name.'_'.$view->current_display)) {
+  // $varname = 'views_inject_groupby_' . $view->name.'_'.$view->current_display;
+  // watchdog('views_inject_groupby', '' . $varname .': '.variable_get($varname, 'Not Set'));
+  // if (variable_get($varname)) {
   //   print _views_inject_groupby_get_query_string($view);
   // }
 }
@@ -86,7 +93,8 @@ function views_inject_groupby_query_alter(&$query) {
   if( isset($query->alterMetaData['view']) ){
     $view_name = $query->alterMetaData['view']->name;
     $view_current_display = $query->alterMetaData['view']->current_display;
-    if (variable_get('views_inject_groupby_' . $view_name . '_' . $view_current_display)) {
+    $varname = 'views_inject_groupby_' . $view_name . '_' . $view_current_display;
+    if (variable_get($varname,FALSE)) {
       $query_snippet = variable_get('views_inject_groupby_' . $view_name.'_'.$view_current_display);
 
       $oldgroupby = $query->getGroupBy(); $oldgroupby = array();
